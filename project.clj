@@ -1,5 +1,5 @@
 
-(defproject flexiana "0.0.1-SNAPSHOT"
+(defproject flexiana "0.1"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -16,10 +16,10 @@
                  [metosin/reitit-ring "0.5.12"]
 
 
-                 [org.clojure/tools.logging "1.1.0"]
-                 [org.apache.logging.log4j/log4j-core "2.13.0"]
-                 [org.apache.logging.log4j/log4j-api "2.13.0"]
-                 [org.apache.logging.log4j/log4j-jcl "2.13.0"]
+                 [org.clojure/tools.logging "LATEST"]
+                 [org.apache.logging.log4j/log4j-core "LATEST"]
+                 [org.apache.logging.log4j/log4j-api "LATEST"]
+                 [org.apache.logging.log4j/log4j-jcl "LATEST"]
                  ;; other
                  #_[commons-codec/commons-codec "1.9"]
                  #_[org.apache.commons/commons-lang3 "3.10"]
@@ -29,9 +29,9 @@
                  ;; matching library
                  #_[org.clojure/core.match "1.0.0"]]
                  ;;http requests 
-  ;; :main ^:skip-aot flexiana-service-core
+  ;; :main ^:skip-aot flexiana.core
 
-  :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
+  ;; :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
   :target-path "target/%s"
   :profiles {:dev {:source-paths ["src/clj" "dev"]
                    :dependencies [[org.clojure/tools.namespace "LATEST"]
