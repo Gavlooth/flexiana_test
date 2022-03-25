@@ -28,12 +28,16 @@
                  #_[com.fzakaria/slf4j-timbre "0.3.19"]
                  ;; matching library
                  #_[org.clojure/core.match "1.0.0"]]
-                 ;;http requests 
+                 ;;http requests
   ;; :main ^:skip-aot flexiana.core
 
   ;; :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
   :target-path "target/%s"
-  :profiles {:dev {:source-paths ["src/clj" "dev"]
+  :profiles {:cljs {:source-paths ["src/cljs"]
+                    :plugins [[lein-tools-deps "0.4.5"]]
+                    :middleware [lein-tools-deps.plugin/resolve-dependencies-with-deps-edn]
+                    :lein-tools-deps/config {:config-files [:install :user :project]}}
+             :dev {:source-paths ["src/clj" "dev"]
                    :dependencies [[org.clojure/tools.namespace "LATEST"]
                                   [jumblerg/ring-cors "2.0.0"]]
                    :repl-options {:init-ns user}

@@ -10,7 +10,7 @@
     [reitit.ring.coercion :as coercion]
     [reitit.ring :as ring]
     [ring.adapter.jetty :as jetty]
-    [flexiana.utils :as u])
+    [utils :as u])
   (:import (org.eclipse.jetty.util.log Log)
            (org.eclipse.jetty.util.log StdErrLog)))
 
