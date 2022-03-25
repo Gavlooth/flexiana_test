@@ -22,33 +22,30 @@
 
 
 (defnc Flexiana-component []
-  (let [[state set-state] (hooks/use-state {:search-results [] :search-term ""})]
+  (let [[{:keys [string-1 string-2  is-scrambled]:as state} set-state] (hooks/use-state {:string-1 ""  :string-2 "" :is-scrambled ""})]
     #h/e [:div {:class "central-container"}
+          [:div "is scrambled?"]
+          [:div {:class "display-container"} [:span is-scrambled]]
           [:form {:on-submit #(.preventDefault %)
                   :class "pure-form search-form"}
 
             [:label {:for "string-1"} "input first string"]
-            [:input {:name "string-1" :type "text", :class "pure-input-rounded"}
-                    #_#_ :on-change #(set-state assoc :string-1 (.. % -target -value))]
+            [:input {:name "string-1" :type "text", :class "pure-input-rounded"
+                     :on-change #(set-state assoc :string-1 (.. % -target -value))}]
 
             [:label {:for "string-2"} "input second string"]
-            [:input {:name "string-2" :type "text", :class "pure-input-rounded"}
-                    #_#_ :on-change #(set-state assoc :string-2 (.. % -target -value))]]
+            [:input {:name "string-2" :type "text", :class "pure-input-rounded"
+                     :on-change #(set-state assoc :string-2 (.. % -target -value))}]]
           [:input {:class "button-f pure-button submit-button"
                    :type "button"
                    :value "Send strings"
                    :on-click
-                   (let [{{:keys [host port]} :remote-host } config]
+                   (let [{{:keys [host port]} :remote-host } config
+                         uri (m/spy (cl-format nil "http://~a:~a/flexiana" host port))]
                     (fn [_]
-                      (when state
-                       (async/take! (u/fetch (m/spy (cl-format nil "~a:~a" host port))
-                                             {:method "get"})
-                                    (fn [x]  (set-state (assoc x :search-results  (:results (js->clj (.parse js/JSON (:body x)) :keywordize-keys true)))))))))}]]))
-
-
-
-
-
+                      (when-not (or (str/blank? string-2) (str/blank? string-1))
+                       (async/take! (u/js-fetch uri (u/format-request (dissoc  state :is-scrambled) :content-type "application/json"))
+                                    (fn [x]  (set-state assoc :is-scrambled (m/spy (:body x))))))))}]]))
 
 
 

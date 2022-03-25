@@ -1,4 +1,5 @@
 (ns utils
+  (:require-macros [macros :as m])
   (:require
     [clojure.string :as str]
     [clojure.walk :as walk]
@@ -37,32 +38,39 @@
       form)))
 
 
-(defn format-request [token body & {:keys [content-type request response method]
-                                    :or {method "post"
-                                         response "text"
-                                         request :json
-                                         content-type "application/json"}}]
- (let [body (cond
-              (= "json" (name request)) (clj->json body)
-              (= "form" (name request)) (js/URLSearchParams. (form-data body)) ;; URLSearchParams not necessary
-              :else body)
-       content-type (cond
-                      (= "json" (name request))  "application/json"
-                      (= "form" (name request))  "application/x-www-form-urlencoded"
-                      :else  content-type)]
-  {:headers
-   {:auth-token  token
+(defn format-request [body & {:keys [mode token  content-type request response method]
+                              :or {method "post"
+                                   mode "cors"
+                                   response "text"
+                                   content-type "application/json"}}]
 
-    :Content-type content-type}
-   :body body
-   :method method
-   :response (name response)}))
-;;  Access-Control-Allow-Origin)
+ (clog content-type {:color "tomato"})
+ (let [ content-type (cond
+                       (not request)  content-type
+                       (= "json" (name request))  "application/json"
+                       (= "form" (name request))  "application/x-www-form-urlencoded"
+                       (= "application/x-www-form-urlencoded" (name request))  "application/x-www-form-urlencoded"
+                       (= "text" (name request))  "application/json"
+                       (= "text/plain" (name request))  "application/json"
+
+                       :else  content-type)
+       body (cond
+              (= "application/json" content-type) (.stringify js/JSON (clj->json body))
+              (= "application/x-www-form-urlencoded"  content-type) (js/URLSearchParams. (form-data body)) ;; URLSearchParams not necessary
+              :else body)]
+
+  (m/spy (clj->js (m/spy  {:headers
+                           (merge (when token  {:auth-token  token})
+                                  {:content-type content-type})
+                           :mode mode
+                           :body body
+                           :method method
+                           :response (name response)})))))
 
 (defn js-fetch [url obj]
   (async/go
       (let [response-type (oget obj "response")
-            response (<p! (js/fetch url obj))
+            response (<p! (js/fetch url  obj))
             body    (case  response-type
                            "text"  (<p!  (.text response))
                            "json"  (<p! (.json response))
@@ -121,16 +129,14 @@
                    m*)))
 
 (defn fetch [url data & {:as options}]
-  (let [data (transform-map   (merge (when WITH-CORS {:mode "cors"})
-                                     {:Access-Control-Allow-Origin "*"
-                                      :method "post"
-                                      :response "text"}
-                                     options
-                                     data)
-
-
-                            :key-handler #(str/lower-case (name %)))]
-    (js-fetch url  (clj->js data))))
+  (let [datum (transform-map   (merge (when WITH-CORS {:mode "cors"})
+                                      {:method "post"
+                                       :Access-Control-Allow-Origin "*"
+                                       :response "text"}
+                                      data
+                                      options)
+                             :key-handler #(str/lower-case (name %)))]
+    (js-fetch url (clj->js datum))))
 
 
 ;; (def public-key (m/file->string "jwt_RS256_key.pub"))

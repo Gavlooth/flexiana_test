@@ -15,6 +15,8 @@
                  [metosin/reitit-middleware "0.5.12"]
                  [metosin/reitit-ring "0.5.12"]
 
+                 [metosin/jsonista "0.3.5"]
+                 [ring/ring-json "0.5.1"]
 
                  [org.clojure/tools.logging "LATEST"]
                  [org.apache.logging.log4j/log4j-core "LATEST"]
@@ -29,8 +31,7 @@
                  ;; matching library
                  #_[org.clojure/core.match "1.0.0"]]
                  ;;http requests
-  ;; :main ^:skip-aot flexiana.core
-
+  :main ^:skip-aot flexiana.core
   ;; :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
   :target-path "target/%s"
   :profiles {:cljs {:source-paths ["src/cljs"]
@@ -43,6 +44,6 @@
                    :repl-options {:init-ns user}
                    :init (println "here we are in" *ns*)}
              :uberjar {:source-paths ["src/clj"]; "prod"
-                       :main flexiana-core.core
+                       :main flexiana.core
                        :aot :all}})
 
