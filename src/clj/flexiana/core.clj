@@ -92,7 +92,7 @@
                          (comment
                            (.addShutdownHook
                             (Runtime/getRuntime)
-                            (Thread.  (shutdown-system lock)))))))
+                            (Thread.  (shutdown-system )))))))
 
 
 
